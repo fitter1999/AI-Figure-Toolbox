@@ -134,6 +134,14 @@ type IllustratorTraceResponse = {
 };
 
 const SAMPLE_DIR = "选择 PNG/JPG 图片，或拖入包含图片的文件夹";
+const MANUAL_TEXT_OCR_TIMEOUT_MS = 12000;
+const MANUAL_TEXT_OCR_MAX_PIXELS = 260000;
+const TESSERACT_OPTIONS = {
+  workerPath: "/tesseract/worker.min.js",
+  corePath: "/tesseract/core",
+  langPath: "/tesseract/lang",
+  gzip: false,
+} as const;
 let openCvPromise: Promise<any> | null = null;
 let imageTracerPromise: Promise<any> | null = null;
 
@@ -215,6 +223,7 @@ function App() {
 
     try {
       const worker = await createWorker("eng", 1, {
+        ...TESSERACT_OPTIONS,
         logger: (message) => {
           if (message.status === "recognizing text") {
             updateJob(jobId, {
@@ -480,6 +489,10 @@ function App() {
     const recognizedTexts: TextLayer[] = [];
 
     for (const region of regions) {
+      if (region.width * region.height > MANUAL_TEXT_OCR_MAX_PIXELS) {
+        console.warn("跳过过大的文字识别区，仅作为擦除遮罩处理", region);
+        continue;
+      }
       const recognized = await recognizeManualText(job, region.left, region.top, region.width, region.height);
       const items =
         recognized.items.length > 0
@@ -1376,11 +1389,11 @@ async function recognizeManualText(
   const cropDataUrl = await cropImageRegionDataUrl(job.dataUrl, left, top, width, height);
   const ocrDataUrl = await buildOcrDataUrl(cropDataUrl);
 
-  for (const language of ["eng+chi_sim", "eng"]) {
+  for (const language of ["eng"]) {
     let worker: Awaited<ReturnType<typeof createWorker>> | null = null;
     try {
-      worker = await createWorker(language, 1);
-      const result = await worker.recognize(ocrDataUrl.dataUrl);
+      worker = await createWorker(language, 1, TESSERACT_OPTIONS);
+      const result = await withTimeout(worker.recognize(ocrDataUrl.dataUrl), MANUAL_TEXT_OCR_TIMEOUT_MS, "文字区域 OCR 超时");
       const rawItems: Array<{
         text: string;
         confidence: number;
@@ -1427,6 +1440,16 @@ async function recognizeManualText(
   }
 
   return { text: "", confidence: 0, box: null, items: [] };
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
 }
 
 async function cropImageRegionDataUrl(

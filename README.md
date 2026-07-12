@@ -41,6 +41,24 @@ Why this matters: overlapping regions may cause text to be erased from image ass
 
 原因：区域重合可能导致文字从素材中擦除，或者插图细节被误当成文字处理。
 
+## Network / Offline Notes / 联网与离线说明
+
+The app now includes local Tesseract.js worker/core files and the English OCR language file. Basic English OCR and PPTX export can work without internet after dependencies are installed.
+
+本项目已内置 Tesseract.js 的本地 worker/core 文件和英文 OCR 语言包。依赖安装完成后，基础英文 OCR 和 PPTX 导出可以在断网时使用。
+
+Chinese OCR language data is not bundled by default to keep the repository smaller. If Chinese text recognition is required, internet access is recommended unless you manually add the corresponding local language data.
+
+为了控制仓库体积，默认没有内置中文 OCR 语言包。如果需要中文识别，建议保持联网，或者手动加入对应的本地语言包。
+
+First-time setup still requires internet because `pnpm install` needs to download npm dependencies.
+
+首次安装仍然需要联网，因为 `pnpm install` 需要下载 npm 依赖。
+
+Adobe Illustrator itself does not provide the web app runtime. Node.js and pnpm are still required.
+
+Adobe Illustrator 只负责可选的描摹/导出流程，不提供网页应用运行环境；Node.js 和 pnpm 仍然是必需的。
+
 ## Requirements / 环境要求
 
 Required / 必需：
