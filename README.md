@@ -27,6 +27,20 @@ AI-Figure-Toolbox 是一个本地网页工具，用于把 AI 生成图、PNG/JPG
 - Optional Adobe Illustrator tracing/export workflow on Windows.
 - Windows 下可选使用 Adobe Illustrator 进行描摹/导出。
 
+## Important Usage Tip / 重要使用提醒
+
+Text recognition regions and image asset regions should overlap as little as possible.
+
+文字识别区和素材识别区尽量不要重合。
+
+If the automatically detected regions are not accurate, adjust them manually before exporting. You can move, resize, or delete text regions and asset regions.
+
+如果自动识别区域不准确，请在导出前手动调整。文本识别区和素材识别区都可以移动、缩放或删除。
+
+Why this matters: overlapping regions may cause text to be erased from image assets, or image details to be incorrectly treated as text.
+
+原因：区域重合可能导致文字从素材中擦除，或者插图细节被误当成文字处理。
+
 ## Requirements / 环境要求
 
 Required / 必需：
