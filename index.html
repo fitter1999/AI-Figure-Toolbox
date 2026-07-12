@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>钳工的美术箱</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if (location.protocol === "file:") {
+        const appUrl = "http://127.0.0.1:5173";
+        document.body.innerHTML =
+          '<div style="font-family: Microsoft YaHei, Segoe UI, sans-serif; padding: 40px; color: #172033;">' +
+          "<h2>请通过本地服务打开软件</h2>" +
+          "<p>不要直接双击 index.html。请双击当前目录下的 <b>启动软件.bat</b>，或打开：</p>" +
+          '<p><a href="' +
+          appUrl +
+          '">' +
+          appUrl +
+          "</a></p>" +
+          "</div>";
+        fetch(appUrl, { mode: "no-cors" })
+          .then(() => {
+            location.href = appUrl;
+          })
+          .catch(() => {});
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

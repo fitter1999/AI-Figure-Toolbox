@@ -1,0 +1,14 @@
+node_modules/
+dist/
+work/
+.vite/
+
+*.log
+*.tmp
+*.zip
+*.pptx
+*.msi
+*.traineddata
+
+参考教程/
+测试生成图片/
